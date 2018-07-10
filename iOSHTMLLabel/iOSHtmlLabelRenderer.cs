@@ -15,13 +15,23 @@ namespace CYINT.XPlatformHTMLLabel
 
             if (Control != null && Element != null && !string.IsNullOrWhiteSpace(Element.Text))
             {
+                var prefFont = UIFont.GetPreferredFontForTextStyle(new NSString("UICTFontTextStyleBody"));
+                UIStringAttributes attrBody = new UIStringAttributes
+                {
+                    Font = prefFont
+                };
                 var attr = new NSAttributedStringDocumentAttributes();
                 var nsError = new NSError();
                 attr.DocumentType = NSDocumentType.HTML;
 
                 var myHtmlData = NSData.FromString(Element.Text, NSStringEncoding.Unicode);
                 Control.Lines = 0;
-                Control.AttributedText = new NSAttributedString(myHtmlData, attr, ref nsError);
+                NSMutableAttributedString mutable = new NSMutableAttributedString(new NSAttributedString(myHtmlData, attr, ref nsError));
+                
+                mutable.AddAttributes(attrBody, new NSRange(0, mutable.Length));
+                mutable.FixAttributesInRange(new NSRange(0, mutable.Length));
+                
+                Control.AttributedText = mutable;
             }
         }
 
